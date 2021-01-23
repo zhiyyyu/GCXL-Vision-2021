@@ -12,11 +12,14 @@ include_directories(
 
 add_library( solvepnp
         src/solvePnP.cpp
+)
+add_library( trans
         src/transform.cpp
 )
 
 target_link_libraries(
         solvepnp
+        trans
         ${Sophus_LIBRARIES}
         ${OpenCV_LIBS}
 )

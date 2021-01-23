@@ -9,6 +9,7 @@ add_subdirectory(
         solve
         serialPort
 )
+
 include_directories(
         serialPort/inc
         solve/inc
@@ -19,7 +20,7 @@ include_directories(
 
 set(SOURCE_FILES
         main.cpp
-        S1AutoAttack.cpp
+        AutoAttack.cpp
 )
 add_executable(QRCode
         ${SOURCE_FILES}
@@ -28,6 +29,9 @@ add_executable(QRCode
 add_library(
         solve
         solve/src/solvePnP.cpp
+)
+add_library(
+        transform
         solve/src/transform.cpp
 )
 
@@ -39,6 +43,7 @@ add_library(
 target_link_libraries(
         QRCode
         solve
+        transform
         serialPort
         ${OpenCV_LIBS}
         ${Sophus_LIBRARIES}
