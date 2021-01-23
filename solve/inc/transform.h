@@ -6,20 +6,25 @@
 #include "sophus/so3.h"
 #include "eigen3/Eigen/Dense"
 
+#define pi 3.14159
+
 namespace QRCode{
+
     typedef struct dataPack{
         short yaw;
         short pitch;
+        short distance;
     } dataPack;
 
     class transform{
     public:
         transform();
         ~transform();
-        void receiveFromSerialPort(float yaw, float pitch);
-        void sendToSerialPort(float yaw, float pitch);
-        void setArmor2World();
+        void receiveFromSerialPort(dataPack sendData);
+        void sendToSerialPort(dataPack sendData);
+        void setArmor2World(Sophus::SE3 armor2Camera);
         void setImu(float yaw, float pitch);
+        void calPose(Sophus::SE3 armor);
 
     private:
 
@@ -30,6 +35,7 @@ namespace QRCode{
         Sophus::SE3 imu;
         Sophus::SE3 camera;
         Sophus::SE3 armor;
+        Sophus::SE3 camera2gimbal;
 
     };
 }

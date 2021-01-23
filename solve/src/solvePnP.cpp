@@ -4,7 +4,6 @@
  * @author
  * @notes
  */
-
 #include "solvePnP.h"
 
 #define QRCODE_WIDTH 45.5
@@ -94,17 +93,21 @@ namespace QRCode{
 
         cv::Mat R;
         cv::Rodrigues(rvec, R);             //旋转向量->旋转矩阵
-        std::cout << "R" << R << std::endl;
+
         Eigen::Matrix3d Rotate_M = Eigen::Matrix3d::Identity();
-//        std::cout << "Rotate_M" << Rotate_M << std::endl;
         cv::cv2eigen(R,Rotate_M);           //cv -> eigen
-        std::cout << "R_Eigen" << Rotate_M << std::endl;
         Sophus::SO3 rotate(Rotate_M);
-        std::cout << "R_SO3" << rotate << std::endl;
-        Eigen::Vector3d translate(tvec.ptr<double>(0)[0],tvec.ptr<double>(0)[1],-tvec.ptr<double>(0)[2]);
-        std::cout << "translate" << translate << std::endl;
-        Sophus::SE3 TransformMatrix = Sophus::SE3(rotate,translate);
+        Eigen::Vector3d translate(tvec.ptr<double>(0)[0],tvec.ptr<double>(0)[1],tvec.ptr<double>(0)[2]);
+//        std::cout << "R" << R << std::endl;
+//        std::cout << "Rotate_M" << Rotate_M << std::endl;
+//        std::cout << "R_Eigen" << Rotate_M << std::endl;
+//        std::cout << "R_SO3" << rotate << std::endl;
+//        std::cout << "translate" << translate << std::endl;
+        TransformMatrix = Sophus::SE3(rotate,translate);
         std::cout << "TransformMatrix_SE3" << TransformMatrix << TransformMatrix.translation() << std::endl;
+
+        transform_ = new transform();
+        transform_->setArmor2World(TransformMatrix);
         return;
     }
 }

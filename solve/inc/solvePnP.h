@@ -1,5 +1,5 @@
-#ifndef QRCODE_TRANSFORM_H
-#define QRCODE_TRANSFORM_H
+#ifndef QRCODE_SOLVEPNP_H
+#define QRCODE_SOLVEPNP_H
 
 #include <string>
 #include <vector>
@@ -8,6 +8,7 @@
 #include <opencv2/core/eigen.hpp>
 #include "sophus/se3.h"
 #include "sophus/so3.h"
+#include "transform.h"
 
 namespace QRCode{
     class solvePNP{
@@ -24,7 +25,7 @@ namespace QRCode{
         void setCameraMatrix();
         void setDistCoeffs();
 
-        std::string path = "/home/narrow/QRCode3.bmp";
+        std::string path = "/home/narrow/QRCode4.bmp";
         cv::Mat qrcode;
 //        cv::Mat gray;
 //        cv::Mat thresh;
@@ -42,6 +43,10 @@ namespace QRCode{
 
         cv::Mat rvec;
         cv::Mat tvec;
+
+        Sophus::SE3 TransformMatrix;
+        transform* transform_;
+
     };
 }
 
