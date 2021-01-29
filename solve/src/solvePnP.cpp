@@ -106,8 +106,8 @@ namespace QRCode{
         TransformMatrix = Sophus::SE3(rotate,translate);
         std::cout << "TransformMatrix_SE3" << TransformMatrix << TransformMatrix.translation() << std::endl;
 
-        transform_ = new transform();
-        transform_->setArmor2World(TransformMatrix);
+//        transform_ = new transform();
+//        transform_->setArmor2World(TransformMatrix);
         return;
     }
 }

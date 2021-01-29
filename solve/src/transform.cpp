@@ -12,7 +12,8 @@ namespace QRCode{
         imu = Sophus::SE3(Eigen::Matrix3d::Identity(), Eigen::Vector3d(0,0,0));
         camera = Sophus::SE3(Eigen::Matrix3d::Identity(), Eigen::Vector3d(0,0,0));
         gimbal = Sophus::SE3(Eigen::Matrix3d::Identity(), Eigen::Vector3d(0,0,0));
-        Eigen::Vector3d cameraTrans = Eigen::Vector3d(0, 0, 0);
+//        Eigen::Vector3d cameraTrans = Eigen::Vector3d(0, 0, 0);
+        Eigen::Vector3d cameraTrans = Eigen::Vector3d(-40, 40, 0);
         camera2gimbal = Sophus::SE3(Eigen::Matrix3d::Identity(), cameraTrans);
     }
 
@@ -20,8 +21,9 @@ namespace QRCode{
 
     }
 
-    void transform::receiveFromSerialPort(dataPack sendData){
-
+    void transform::receiveFromSerialPort(dataPack receiveData){
+        receiveData.pitch = 0;
+        receiveData.yaw = 0;
         return;
     }
 
@@ -40,7 +42,8 @@ namespace QRCode{
     }
 
     void transform::setArmor2World(Sophus::SE3 armor2camera){
-        setImu(0, 0);
+        receiveFromSerialPort(receiceData);
+        setImu(receiceData.yaw, receiceData.pitch);
         gimbal = imu;
         camera = camera2gimbal * gimbal;
         armor = armor2camera * camera;
