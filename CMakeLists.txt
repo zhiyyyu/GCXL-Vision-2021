@@ -5,14 +5,16 @@ find_package(Sophus REQUIRED)
 
 set(Sophus_LIBRARIES /usr/local/lib/libSophus.so)
 
-add_subdirectory(
-        solve
-        serialPort
-)
+add_subdirectory(solve)
+add_subdirectory(thread)
+add_subdirectory(serialPort)
+add_subdirectory(detect)
 
 include_directories(
         serialPort/inc
         solve/inc
+        thread/inc
+        detect/inc
         ${OpenCV_INCLUDE_DIRS}
         /usr/include/eigen3
         ${Sophus_INCLUDE_DIRS}
@@ -26,24 +28,12 @@ add_executable(QRCode
         ${SOURCE_FILES}
 )
 
-add_library(
-        solve
-        solve/src/solvePnP.cpp
-)
-add_library(
-        transform
-        solve/src/transform.cpp
-)
-
-add_library(
-        serialPort
-        serialPort/src/serialPort.cpp
-)
-
 target_link_libraries(
         QRCode
-        solve
-        transform
+        thread
+        solvepnp
+        trans
+        detect
         serialPort
         ${OpenCV_LIBS}
         ${Sophus_LIBRARIES}
