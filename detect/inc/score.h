@@ -6,6 +6,7 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/imgcodecs.hpp>
+#include <opencv2/opencv.hpp>
 
 namespace QRCode{
     class score{
@@ -17,8 +18,8 @@ namespace QRCode{
         void trainBoost(cv::Mat trainMat, cv::Mat labelMat);
         float predict(cv::Mat testMat);
         void fitLightBars();
-        template <typename ML>
-        void display(ML model){
+
+        template <typename ML> void display(ML model){
             cv::Mat img = cv::Mat::zeros(height, width, CV_8UC3);
             cv::Vec3b red(0, 0, 255), blue(255, 0, 0);
 

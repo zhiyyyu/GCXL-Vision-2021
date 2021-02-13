@@ -38,6 +38,7 @@ namespace QRCode{
         // train
         cv::Ptr<TrainData> trainData = TrainData::create(trainMat, ROW_SAMPLE, labelMat);
         svm->train(trainData);
+//        svm->save("/svm.xml");
     }
     void score::trainBoost(cv::Mat trainMat, cv::Mat labelMat){
 
@@ -51,6 +52,7 @@ namespace QRCode{
         // train
         cv::Ptr<TrainData> trainData = TrainData::create(trainMat, ROW_SAMPLE, labelMat);
         boost->train(trainData);
+//        boost->save("~/boost.xml");
     }
 
 //    float score::predict(cv::Mat testMat){
