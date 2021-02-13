@@ -6,6 +6,7 @@
 #include "thread1.h"
 #include "thread2.h"
 #include "detect.h"
+#include "locate.h"
 
 namespace QRCode{
     class RoboMasterS1{
@@ -19,6 +20,7 @@ namespace QRCode{
         solvePNP* solvePNP_;
         transform* transform_;
         detect* detect_;
+        locate* locate_;
 //        Sophus::SE3 armor2camera;
     };
 }
