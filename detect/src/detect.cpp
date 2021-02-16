@@ -159,6 +159,7 @@ namespace QRCode{
         warpMat = cv::getAffineTransform(srcPoints, dstPoints);
         cv::warpAffine(img, warpImg, warpMat, warpImg.size());
         cv::Mat ROI = warpImg(cv::Rect((int)tl.x, (int)tl.y, width, height));
+        cv::resize(ROI, ROI, cv::Size(256, 128));
 #if SHOW_ROI
         for(int i=0; i<3; i++) {
             cv::circle(warpImg, dstPoints[i], 1, cv::Scalar(255, 0, 0));

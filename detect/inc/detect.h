@@ -6,11 +6,11 @@
 #include <cmath>
 
 #define DEBUG 0
-#define LABEL_DEBUG 1
+#define LABEL_DEBUG 0
 #define CONTOURS_DEBUG 0
 #define IMAGE_SHOW 0
 #define FEATURE_DEBUG 0
-#define SHOW_ROI 1
+#define SHOW_ROI 0
 
 #define PI (3.14)
 
@@ -26,8 +26,8 @@ namespace QRCode{
         float calOuterProduct(cv::Point2f p1, cv::Point2f p2, cv::Point2f p3);
         bool judgeFlags(cv::Mat img, std::vector<cv::Point> contour);
 
-        int thresh = 150;
-        int maxval = 255;
+        const int thresh = 150;
+        const int maxval = 255;
     };
 
     typedef struct labelFlag{
