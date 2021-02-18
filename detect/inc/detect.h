@@ -8,9 +8,10 @@
 #define DEBUG 0
 #define LABEL_DEBUG 0
 #define CONTOURS_DEBUG 0
-#define IMAGE_SHOW 0
+#define IMAGE_SHOW 1
 #define FEATURE_DEBUG 0
 #define SHOW_ROI 0
+#define FIND_LABEL_DEBUG 0
 
 #define PI (3.14)
 
@@ -24,6 +25,7 @@ namespace QRCode{
         cv::Mat getROI(cv::Mat img, cv::Point2f tl, cv::Point2f tr, cv::Point2f bl);
         float calInnerProduct(cv::Point2f p1, cv::Point2f p2, cv::Point2f p3);
         float calOuterProduct(cv::Point2f p1, cv::Point2f p2, cv::Point2f p3);
+        cv::Point2f flipPoint(cv::Point2f center, cv::Point2f point);
         bool judgeFlags(cv::Mat img, std::vector<cv::Point> contour);
 
         const int thresh = 150;
@@ -50,13 +52,13 @@ namespace QRCode{
         float angle;
         cv::Point2f center;
         cv::Point2f tl;
-        cv::Point2f points[5];
-        std::vector<int> judgePoints = {0, 0, 0, 0, 0};
+        cv::Point2f points[9];
+        std::vector<int> judgePoints = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
         float offset = 5;
         float getWidthHeightRatio(){
             return w / h;
         }
-        void setPointsFromCenter(cv::Point2f* points){
+        void setFivePoints(cv::Point2f* points){
             /**points:
              *          0
              *      1   2   3
@@ -71,6 +73,27 @@ namespace QRCode{
             points[2] = center;
             points[3] = {center.x+wd/2*cosAngle, center.y-wd/2*sinAngle};
             points[4] = {center.x+ht/2*sinAngle, center.y+ht/2*cosAngle};
+            return;
+        }
+        void setNinePoints(cv::Point2f* points){
+            /**points:
+             *      5   0   6
+             *      1   2   3
+             *      7   4   8
+             */
+            float cosAngle = cos(angle/180*PI);
+            float sinAngle = sin(angle/180*PI);
+            float ht = h-offset*2;
+            float wd = w-offset*2;
+            points[0] = {center.x-ht/2*sinAngle, center.y-ht/2*cosAngle};
+            points[1] = {center.x-wd/2*cosAngle, center.y+wd/2*sinAngle};
+            points[2] = center;
+            points[3] = {center.x+wd/2*cosAngle, center.y-wd/2*sinAngle};
+            points[4] = {center.x+ht/2*sinAngle, center.y+ht/2*cosAngle};
+            points[5] = {points[0].x-wd/2*cosAngle, points[0].y+wd/2*sinAngle};
+            points[6] = {points[0].x+wd/2*cosAngle, points[0].y-wd/2*sinAngle};
+            points[7] = {points[4].x-wd/2*cosAngle, points[4].y+wd/2*sinAngle};
+            points[8] = {points[4].x+wd/2*cosAngle, points[4].y-wd/2*sinAngle};
             return;
         }
         void setPointsFromTopLeft(cv::Point2f* points){

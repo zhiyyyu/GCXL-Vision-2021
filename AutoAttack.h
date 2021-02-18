@@ -7,13 +7,27 @@
 #include "thread2.h"
 #include "detect.h"
 #include "locate.h"
+#include "camera.h"
+#include "DAHEN_camera.h"
+#include <ctime>
+
+#define SHOW_RESULT 1
+#define SHOW_TWO_PARTS 0
+#define USE_PIC 0
+#define USE_VIDEO 1
 
 namespace QRCode{
-    class RoboMasterS1{
+    class Robot{
     public:
-        RoboMasterS1();
-        ~RoboMasterS1();
+        Robot();
+        ~Robot();
+        void train();
         void attack();
+        void process(cv::Mat img);
+        cv::Mat getImage(std::string path);
+        cv::Mat getFrame();
+
+        std::string path = "/1.mp4";
 
         thread1* thread1_;
         thread2* thread2_;
@@ -21,6 +35,7 @@ namespace QRCode{
         transform* transform_;
         detect* detect_;
         locate* locate_;
+        DAH_Camera* camera_;
 //        Sophus::SE3 armor2camera;
     };
 }
