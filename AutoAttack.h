@@ -15,6 +15,7 @@
 #define SHOW_TWO_PARTS 0
 #define USE_PIC 0
 #define USE_VIDEO 1
+#define DEBUG 0
 
 namespace QRCode{
     class Robot{
@@ -27,7 +28,7 @@ namespace QRCode{
         cv::Mat getImage(std::string path);
         cv::Mat getFrame();
 
-        std::string path = "/1.mp4";
+        std::string path = "/2.mp4";
 
         thread1* thread1_;
         thread2* thread2_;

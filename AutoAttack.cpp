@@ -34,12 +34,14 @@ namespace QRCode{
 
     void Robot::attack(){
 #if USE_PIC
-        for(int i=0; i<5; i++){
-            cv::Mat imgR = cv::imread(locate_->root + "/R" + std::to_string(i) + ".png");
-            process(imgR);
-            cv::Mat imgB = cv::imread(locate_->root + "/B" + std::to_string(i) + ".png");
-            process(imgB);
-        }
+//        for(int i=0; i<5; i++){
+//            cv::Mat imgR = cv::imread(locate_->root + "/R" + std::to_string(i) + ".png");
+//            process(imgR);
+//            cv::Mat imgB = cv::imread(locate_->root + "/B" + std::to_string(i) + ".png");
+//            process(imgB);
+//        }
+        cv::Mat img = cv::imread(locate_->root + "/B1_1.jpg");
+        process(img);
 #endif
 #if USE_VIDEO
         cv::VideoCapture video;
@@ -49,9 +51,7 @@ namespace QRCode{
         int cnt = 0;
         while(video.read(img)){
             cnt++;
-//            cv::imshow("img", img);
-//            cv::waitKey(10);
-            if(cnt % 15 == 0)
+            if(cnt % 10 == 0)
                 process(img);
         }
         video.release();
@@ -69,10 +69,10 @@ namespace QRCode{
         std::pair<cv::Mat, cv::Mat> twoParts = locate_->divideIntoTwoParts(visualLabel);
         cv::Mat leftHalf = twoParts.first;
         cv::Mat rightHalf = twoParts.second;
-        clock_t start = clock();
+//        clock_t start = clock();
         int leftOcr = locate_->predict(leftHalf);
         int rightOcr = locate_->predict(rightHalf);
-        std::cout << "svm time(twice):" << (double)(clock()-start) / CLOCKS_PER_SEC << std::endl;
+//        std::cout << "svm time(twice):" << (double)(clock()-start) / CLOCKS_PER_SEC << std::endl;
         std::vector<int> location = locate_->getLocation(leftOcr*10+rightOcr);
         cv::putText(visualLabel, locate_->getString(location), cv::Point(10, 120), cv::FONT_HERSHEY_COMPLEX, 0.4, cv::Scalar(255, 0, 0));
 #if SHOW_TWO_PARTS
@@ -80,13 +80,14 @@ namespace QRCode{
         cv::imshow("right", rightHalf);
 //        cv::waitKey(0);
 #endif
-#if DEBUG
-        std::cout << rect.size() << std::endl;
-        cv::imshow("visual label", visualLabel);
-        cv::waitKey(0);
+#if OCR_DEBUG
+//        std::cout << rect.size() << std::endl;
+//        cv::imshow("visual label", visualLabel);
+//        cv::waitKey(0);
         std::cout << leftOcr << rightOcr << std::endl;
 #endif
 #if SHOW_RESULT
+        std::cout << leftOcr << rightOcr << std::endl;
         cv::imshow("visualLable", visualLabel);
         cv::waitKey(10);
 #endif
