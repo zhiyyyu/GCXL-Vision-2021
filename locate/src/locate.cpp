@@ -8,7 +8,6 @@ namespace QRCode{
         fs::path rootPath(root);
         fs::path imagePath(train_images_path);
         fs::path labelPath(train_labels_path);
-
         fs::path imagePath_ = rootPath / imagePath;
         fs::path labelPath_ = rootPath / labelPath;
 
@@ -21,24 +20,23 @@ namespace QRCode{
             std::string image = imageIter->path().string();
             fs::path tempLabelPath_ = labelPath_ / fs::basename(image);
             std::string label = tempLabelPath_.string() + ".txt";
-
+            // get img
             cv::Mat img = cv::imread(image, 0);
-
+            // get label
             std::ifstream file;
             file.open(label);
             char class_;
             file >> class_;
             file.close();
-
+            // generate mat
             for(int i=0; i<height*width; i++){
                 trainMat.at<float>(cnt, i) = (float)img.at<uchar>(i/height, i%height);
             }
             if(class_ == '0' || class_ == '1' || class_ == '2' || class_ == '3' || class_ == '4') {
                 labelMat.at<int>(cnt, 0) = (int)(class_-'0');
             }
-            else if(class_ == 'A'){ labelMat.at<int>(cnt, 0) = 5; }
-            else if(class_ == 'B'){ labelMat.at<int>(cnt, 0) = 6; }
-            else if(class_ == 'R'){ labelMat.at<int>(cnt, 0) = 7; }
+            else if(class_ == 'B'){ labelMat.at<int>(cnt, 0) = 5; }
+            else if(class_ == 'R'){ labelMat.at<int>(cnt, 0) = 6; }
             imageIter++, cnt++;
 #if DEBUG
             std::cout << image << label << std::endl;
@@ -68,7 +66,7 @@ namespace QRCode{
         return std::make_pair(leftHalf, rightHalf);
     };
 
-    void locate::decode(cv::Mat trainDataMat, cv::Mat labelDataMat){
+    void locate::trainSVM(cv::Mat trainDataMat, cv::Mat labelDataMat){
         // create SVM
         svm = SVM::create();
         // set params
@@ -84,7 +82,9 @@ namespace QRCode{
         return;
     }
     int locate::predict(cv::Mat testImg) {
+//        std::cout << testImg.size << std::endl;
         cv::cvtColor(testImg, testImg, cv::COLOR_BGR2GRAY);
+        cv::GaussianBlur(testImg, testImg, cv::Size(5, 5), 3, 3);
         cv::threshold(testImg, testImg, 150, 255, cv::THRESH_BINARY);
 #if TEST_IMG
         fs::path rootPath(root);
@@ -100,16 +100,19 @@ namespace QRCode{
         for(int i=0; i<height*width; i++){
             testMat.at<float>(0, i) = (float)testImg.at<uchar>(i/height, i%height);
         }
-        std::cout << testMat << std::endl;
+//        testMat = testImg.reshape(1, height*width);
 #if DEBUG
-        std::cout << testMat.size << "testMat" << testMat << std::endl;
-//        std::cout << result << std::endl;
+//        std::cout << testMat.size << "testMat" << testMat << std::endl;
+        cv::imshow("test image", testImg);
+        cv::waitKey(0);
 #endif
         static cv::Ptr<SVM> svm;
         svm = svm->load(root+"/svm.xml");
         float result = 0;
         result = svm->predict(testMat);
+#if RESULT
         std::cout << result << std::endl;
+#endif
         return (int)result;
     }
 
@@ -117,11 +120,7 @@ namespace QRCode{
         int left = label/10;
         int right = label%10;
         if(left == 5){
-
-        }
-        else if(left == 6){
             if(right == 0){
-//                std::vector<int> <<
                 return {19200, 0, 0, 0};
             }
             else if(right == 1){
@@ -137,9 +136,8 @@ namespace QRCode{
                 return {23100, -3330, -700, 180};
             }
         }
-        else if(left == 7){
+        else if(left == 6){
             if(right == 0){
-//                std::vector<int> <<
                 return {8800, 0, 0, 0};
             }
             else if(right == 1){

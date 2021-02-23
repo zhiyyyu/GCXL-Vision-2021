@@ -23,7 +23,7 @@ namespace QRCode{
         ~locate() = default;
         std::pair<cv::Mat, cv::Mat> loadData();
         void detect();
-        void decode(cv::Mat trainMat, cv::Mat labelMat);
+        void trainSVM(cv::Mat trainMat, cv::Mat labelMat);
         int predict(cv::Mat testImg);
         std::pair<cv::Mat, cv::Mat> divideIntoTwoParts(cv::Mat img);
         std::vector<int> getLocation(int label);
@@ -37,11 +37,11 @@ namespace QRCode{
 
     private:
 
-        std::string train_images_path = "./data/Images";
+        std::string train_images_path = "./data/Images_small";
         std::string train_labels_path = "./data/Labels";
-        std::string test_img_path = "./1.png";
+        std::string test_img_path = "/B.png";
 
-        const int sampleNum = 8128; //8128
+        const int sampleNum = 9; //8128
         const int height = 128;
         const int width = 128;
         std::vector<cv::Mat> trainSample;
