@@ -1,10 +1,9 @@
-#include "solvePnP.h"
 #include "AutoAttack.h"
-//#include "S1AutoAttack.h"
 
 int main() {
 
-    QRCode::RoboMasterS1* s1 = new QRCode::RoboMasterS1();
-    s1->attack();
+    QRCode::Robot* robot = new QRCode::Robot();
+    robot->train();
+    robot->attack();
     return 0;
 }
