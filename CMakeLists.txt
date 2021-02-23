@@ -9,12 +9,17 @@ add_subdirectory(solve)
 add_subdirectory(thread)
 add_subdirectory(serialPort)
 add_subdirectory(detect)
+add_subdirectory(locate)
+add_subdirectory(camera)
 
 include_directories(
+        camera/inc
         serialPort/inc
         solve/inc
         thread/inc
         detect/inc
+        locate/inc
+        camera/lib/dahen_include
         ${OpenCV_INCLUDE_DIRS}
         /usr/include/eigen3
         ${Sophus_INCLUDE_DIRS}
@@ -28,13 +33,14 @@ add_executable(QRCode
         ${SOURCE_FILES}
 )
 
-target_link_libraries(
-        QRCode
+target_link_libraries( QRCode
         thread
         solvepnp
         trans
         detect
         serialPort
+        locate
+        camera
         ${OpenCV_LIBS}
         ${Sophus_LIBRARIES}
 )
