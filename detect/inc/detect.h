@@ -5,10 +5,11 @@
 #include "numeric"
 #include <cmath>
 
+#define OCR_DEBUG 0
 #define DEBUG 0
 #define LABEL_DEBUG 0
 #define CONTOURS_DEBUG 0
-#define IMAGE_SHOW 1
+#define IMAGE_SHOW 0
 #define FEATURE_DEBUG 0
 #define SHOW_ROI 0
 #define FIND_LABEL_DEBUG 0
@@ -50,15 +51,17 @@ namespace QRCode{
          *
          */
         float angle;
+        float areaRatio;
         cv::Point2f center;
         cv::Point2f tl;
         cv::Point2f points[9];
         std::vector<int> judgePoints = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-        float offset = 5;
+        float offset = 10;
         float getWidthHeightRatio(){
             return w / h;
         }
         void setFivePoints(cv::Point2f* points){
+            offset = 10;
             /**points:
              *          0
              *      1   2   3
@@ -76,6 +79,7 @@ namespace QRCode{
             return;
         }
         void setNinePoints(cv::Point2f* points){
+            offset = h/4;
             /**points:
              *      5   0   6
              *      1   2   3
@@ -96,19 +100,19 @@ namespace QRCode{
             points[8] = {points[4].x+wd/2*cosAngle, points[4].y-wd/2*sinAngle};
             return;
         }
-        void setPointsFromTopLeft(cv::Point2f* points){
-            /**points:
-             *          0
-             *      1   2   3
-             *          4
-             */
-            points[0] = {tl.x+w/2, tl.y+offset};
-            points[1] = {tl.x+offset, tl.y+h/2};
-            points[2] = {tl.x+w/2, tl.y+h/2};
-            points[3] = {tl.x+w-offset, tl.y+h/2};
-            points[4] = {tl.x+w/2, tl.y+h-offset};
-            return;
-        }
+//        void setPointsFromTopLeft(cv::Point2f* points){
+//            /**points:
+//             *          0
+//             *      1   2   3
+//             *          4
+//             */
+//            points[0] = {tl.x+w/2, tl.y+offset};
+//            points[1] = {tl.x+offset, tl.y+h/2};
+//            points[2] = {tl.x+w/2, tl.y+h/2};
+//            points[3] = {tl.x+w-offset, tl.y+h/2};
+//            points[4] = {tl.x+w/2, tl.y+h-offset};
+//            return;
+//        }
     } labelFlag;
 }
 
