@@ -1,9 +1,13 @@
-#include "AutoAttack.h"
+#include "Robot.h"
 
 int main() {
 
     QRCode::Robot* robot = new QRCode::Robot();
-    robot->train();
-    robot->attack();
+
+    cv::Mat qrcode = robot->loadImg(robot->root+robot->qrcode_path);
+    cv::Mat barcode = robot->loadImg(robot->root+robot->barcode_path);
+    robot->process(qrcode,  QRCODE_MODE);
+    robot->process(barcode, BARCODE_MODE);
+//    robot->process(material, MATERIAL_MODE);
     return 0;
 }
