@@ -50,13 +50,13 @@ namespace QRCode{
         cv::waitKey(0);
     }
 
-    void solvePNP::detect(){
-        loadImg(path);
-//        myQRDetector(qrcode);
-        detector.detectAndDecode(qrcode, list, result);
-
-        return;
-    }
+//    void solvePNP::detect(){
+//        loadImg(path);
+////        myQRDetector(qrcode);
+//        detector.detectAndDecode(qrcode, list, result);
+//
+//        return;
+//    }
 
     void solvePNP::setCameraMatrix(){
         cameraMatrix = cv::Mat(3, 3, CV_64FC1, cv::Scalar::all(0));
