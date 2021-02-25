@@ -13,4 +13,6 @@ add_library( detect
 target_link_libraries(
         detect
         ${OpenCV_LIBS}
+        ${ZBAR_LIBRARIES}
+        zbar
 )
