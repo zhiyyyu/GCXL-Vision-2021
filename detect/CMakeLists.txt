@@ -7,8 +7,7 @@ include_directories(
 
 add_library( detect
         src/detect.cpp
-        src/score.cpp
-        )
+)
 
 target_link_libraries(
         detect

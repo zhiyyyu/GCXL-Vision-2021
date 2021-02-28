@@ -24,6 +24,7 @@ namespace QRCode{
         std::string QRCodeDetector(cv::Mat img);
         std::string BarCodeDetector(cv::Mat img);
         std::vector<cv::Point2f> MaterialDetector(cv::Mat img, int color, int level);
+        cv::Point2f chromaticRingDetector(cv::Mat img, int color);
         void display(cv::Mat img, cv::Mat ROI, std::vector<cv::Point> list);
         bool judgeBarCode(cv::RotatedRect rect);
         bool judgeMaterial(cv::RotatedRect rect);

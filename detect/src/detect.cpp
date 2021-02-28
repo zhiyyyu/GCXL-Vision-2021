@@ -161,6 +161,53 @@ namespace QRCode {
         return retPoints;
     }
 
+    cv::Point2f detect::chromaticRingDetector(cv::Mat img, int color) {
+        cv::Mat hsvImg;
+        cv::Mat blurImg;
+        cv::Mat threshImg;
+        cv::Mat resImg;
+        std::vector<std::vector<cv::Point>> contours;
+        cv::Scalar lower, upper;
+
+        if(color == RED){
+            lower = cv::Scalar(0, 60, 60);
+            upper = cv::Scalar(6, 255, 255);
+        }
+        else if(color == GREEN){
+            lower = cv::Scalar(35, 43, 35);
+            upper = cv::Scalar(90, 255, 255);
+        }
+        else if(color == BLUE) {
+            lower = cv::Scalar(100, 80, 46);
+            upper = cv::Scalar(124, 255, 255);
+        }
+
+        cv::cvtColor(img, hsvImg, cv::COLOR_BGR2HSV);
+        cv::inRange(hsvImg, lower, upper, hsvImg);
+        cv::GaussianBlur(hsvImg, blurImg, cv::Size(5, 5), 3, 3);
+        cv::threshold(blurImg, threshImg, thresh, maxval, cv::THRESH_OTSU);
+        cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(3, 3));
+//        cv::morphologyEx(threshImg, resImg, cv::MORPH_OPEN, kernel, cv::Point(-1, -1), 1);
+        cv::morphologyEx(threshImg, resImg, cv::MORPH_CLOSE, kernel, cv::Point(-1, -1), 6);
+//        resImg = threshImg.clone();
+        cv::findContours(resImg.clone(), contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
+        cv::drawContours(img, contours, -1, cv::Scalar(0, 255, 0), 2);
+
+        cv::Point2f retPoint;
+        float radius;
+        cv::minEnclosingCircle(contours[0], retPoint, radius);
+        cv::circle(img, retPoint, (int)radius, cv::Scalar(0, 0, 255), 2);
+
+        cv::imshow("img", img);
+        cv::imshow("hsv", hsvImg);
+        cv::imshow("blur", blurImg);
+        cv::imshow("thresh", threshImg);
+        cv::imshow("res", resImg);
+        cv::waitKey(0);
+        return retPoint;
+    }
+
+
     void detect::display(cv::Mat img, cv::Mat ROI, std::vector<cv::Point> list) {
         cv::Mat showImg = img.clone();
         for(int i=0;i<4;i++){
