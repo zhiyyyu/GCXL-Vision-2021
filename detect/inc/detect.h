@@ -8,6 +8,12 @@
 #define MY_DETECTOR 0
 #define SHOW_IMAGE 1
 
+#define RED 1
+#define GREEN 2
+#define BLUE 3
+#define TOP 1
+#define BOT 0
+
 #define PI (3.14159)
 
 namespace QRCode{
@@ -15,9 +21,9 @@ namespace QRCode{
     public:
         detect() = default;
         ~detect() = default;
-        cv::Mat QRCodeDetector(cv::Mat img);
-        cv::Mat BarCodeDetector(cv::Mat img);
-        cv::Mat MaterialDetector(cv::Mat img);
+        std::string QRCodeDetector(cv::Mat img);
+        std::string BarCodeDetector(cv::Mat img);
+        std::vector<cv::Point2f> MaterialDetector(cv::Mat img, int color, int level);
         void display(cv::Mat img, cv::Mat ROI, std::vector<cv::Point> list);
         bool judgeBarCode(cv::RotatedRect rect);
         bool judgeMaterial(cv::RotatedRect rect);
@@ -27,6 +33,7 @@ namespace QRCode{
         const int maxval = 255;
         const int width = 400;
         const int height = 300;
+
     };
 
     typedef struct barCodeNode{

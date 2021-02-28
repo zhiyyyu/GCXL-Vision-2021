@@ -7,24 +7,25 @@
 #include "detect.h"
 
 namespace QRCode {
-    cv::Mat detect::QRCodeDetector(cv::Mat img) {
+    std::string detect::QRCodeDetector(cv::Mat img) {
         cv::QRCodeDetector qrDetector;
         std::vector<cv::Point> list;
         cv::Mat qrcode;
         std::string data = qrDetector.detectAndDecode(img, list, qrcode);
-        display(img, qrcode, list);
-        std::cout << "data: " << data << std::endl;
-        return qrcode;
+//        display(img, qrcode, list);
+//        std::cout << "data: " << data << std::endl;
+        return data;
     }
-    cv::Mat detect::BarCodeDetector(cv::Mat img) {
+
+    std::string detect::BarCodeDetector(cv::Mat img) {
 #if ZBAR_DETECTOR
         zbar::ImageScanner scanner;
         scanner.set_config(zbar::ZBAR_NONE, zbar::ZBAR_CFG_ENABLE, 1);
         cv::Mat grayImg;
         cv::cvtColor(img, grayImg, cv::COLOR_BGR2GRAY);
-        int width = grayImg.cols;
-        int height = grayImg.rows;
-        uchar *raw = grayImg.data;
+        unsigned int width = (unsigned int)grayImg.cols;
+        unsigned int height = (unsigned int)grayImg.rows;
+        uchar* raw = grayImg.data;
         zbar::Image imageZbar(width, height, "Y800", raw, width * height);
         scanner.scan(imageZbar); //扫描条码
         zbar::Image::SymbolIterator symbol = imageZbar.symbol_begin();
@@ -37,10 +38,10 @@ namespace QRCode {
             std::cout<<"类型："<<symbol->get_type_name()<<std::endl;
             std::cout<<"条码："<<symbol->get_data()<<std::endl;
         }
-        cv::imshow("Source Image", img);
-        cv::waitKey(0);
+//        cv::imshow("Source Image", img);
+//        cv::waitKey(0);
         imageZbar.set_data(NULL,0);
-        return img;
+        return symbol->get_data();
 #endif
 #if MY_DETECTOR
         cv::Mat grayImg;
@@ -81,8 +82,83 @@ namespace QRCode {
 #endif
     }
 
-    cv::Mat detect::MaterialDetector(cv::Mat img) {
+    std::vector<cv::Point2f> detect::MaterialDetector(cv::Mat img, int color, int level) {
+        cv::Mat hsvImg;
+        cv::Mat blurImg;
+        cv::Mat threshImg;
+        cv::Mat resImg;
+        std::vector<std::vector<cv::Point>> contours;
+        cv::Scalar lower, upper;
 
+        if(color == RED){
+            lower = cv::Scalar(0, 60, 60);
+            upper = cv::Scalar(6, 255, 255);
+        }
+        else if(color == GREEN){
+            lower = cv::Scalar(35, 43, 35);
+            upper = cv::Scalar(90, 255, 255);
+        }
+        else if(color == BLUE) {
+            lower = cv::Scalar(100, 80, 46);
+            upper = cv::Scalar(124, 255, 255);
+        }
+
+        cv::cvtColor(img, hsvImg, cv::COLOR_BGR2HSV);
+        cv::inRange(hsvImg, lower, upper, hsvImg);
+        cv::GaussianBlur(hsvImg, blurImg, cv::Size(5, 5), 3, 3);
+        cv::threshold(blurImg, threshImg, thresh, maxval, cv::THRESH_OTSU);
+        cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(3, 3));
+        cv::morphologyEx(threshImg, resImg, cv::MORPH_OPEN, kernel, cv::Point(-1, -1), 4);
+        cv::morphologyEx(resImg, resImg, cv::MORPH_CLOSE, kernel, cv::Point(-1, -1), 4);
+        cv::findContours(resImg.clone(), contours, cv::RETR_LIST, cv::CHAIN_APPROX_SIMPLE);
+
+//        std::cout << contours.size();
+        std::vector<cv::Point2f> retPoints;
+        if(contours.size() == 2){
+            cv::RotatedRect rect1, rect2;
+            rect1 = cv::minAreaRect(contours[0]);
+            rect2 = cv::minAreaRect(contours[1]);
+            cv::Point2f points1[4], points2[4];
+            rect1.points(points1);
+            rect2.points(points2);
+            if(level == TOP) {
+               if(points1[0].y < points2[0].y){
+                   retPoints.push_back(points1[0]);
+                   retPoints.push_back(points1[1]);
+                   retPoints.push_back(points1[2]);
+                   retPoints.push_back(points1[3]);
+               }
+                else{
+                   retPoints.push_back(points2[0]);
+                   retPoints.push_back(points2[1]);
+                   retPoints.push_back(points2[2]);
+                   retPoints.push_back(points2[3]);
+               }
+            }
+            else{
+                if(points1[0].y > points2[0].y){
+                    retPoints.push_back(points1[0]);
+                    retPoints.push_back(points1[1]);
+                    retPoints.push_back(points1[2]);
+                    retPoints.push_back(points1[3]);
+                }
+                else{
+                    retPoints.push_back(points2[0]);
+                    retPoints.push_back(points2[1]);
+                    retPoints.push_back(points2[2]);
+                    retPoints.push_back(points2[3]);
+                }
+            }
+
+        }
+
+        cv::imshow("img", img);
+        cv::imshow("hsv", hsvImg);
+        cv::imshow("blur", blurImg);
+        cv::imshow("thresh", threshImg);
+        cv::imshow("res", resImg);
+        cv::waitKey(0);
+        return retPoints;
     }
 
     void detect::display(cv::Mat img, cv::Mat ROI, std::vector<cv::Point> list) {
