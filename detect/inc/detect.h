@@ -23,11 +23,11 @@ namespace QRCode{
         ~detect() = default;
         std::string QRCodeDetector(cv::Mat img);
         std::string BarCodeDetector(cv::Mat img);
-        std::vector<cv::Point2f> MaterialDetector(cv::Mat img, int color, int level);
+        std::vector<cv::Point2f> MaterialDetector(cv::Mat img, int color);
         cv::Point2f chromaticRingDetector(cv::Mat img, int color);
         void display(cv::Mat img, cv::Mat ROI, std::vector<cv::Point> list);
         bool judgeBarCode(cv::RotatedRect rect);
-        bool judgeMaterial(cv::RotatedRect rect);
+        bool judgeMaterial(cv::RotatedRect rect, std::pair<int, int> size);
         cv::Mat getROI(cv::Mat img, std::vector<cv::RotatedRect> roi);
 
         const int thresh = 150;

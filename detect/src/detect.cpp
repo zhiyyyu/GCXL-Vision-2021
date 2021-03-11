@@ -8,6 +8,9 @@
 
 namespace QRCode {
     std::string detect::QRCodeDetector(cv::Mat img) {
+        if(img.empty()){
+            return "";
+        }
         cv::QRCodeDetector qrDetector;
         std::vector<cv::Point> list;
         cv::Mat qrcode;
@@ -82,7 +85,17 @@ namespace QRCode {
 #endif
     }
 
-    std::vector<cv::Point2f> detect::MaterialDetector(cv::Mat img, int color, int level) {
+    /**
+     * @brief 检测物料，返回颜色为color的物料四个角的坐标
+     * @param img
+     * @param color
+     * @return
+     */
+    std::vector<cv::Point2f> detect::MaterialDetector(cv::Mat img, int color) {
+        if(img.empty()){
+            std::vector<cv::Point2f> ret;
+            return ret;
+        }
         cv::Mat hsvImg;
         cv::Mat blurImg;
         cv::Mat threshImg;
@@ -91,65 +104,80 @@ namespace QRCode {
         cv::Scalar lower, upper;
 
         if(color == RED){
-            lower = cv::Scalar(0, 60, 60);
+            lower = cv::Scalar(0, 43, 46);
             upper = cv::Scalar(6, 255, 255);
         }
         else if(color == GREEN){
-            lower = cv::Scalar(35, 43, 35);
-            upper = cv::Scalar(90, 255, 255);
+            lower = cv::Scalar(35, 43, 46);
+            upper = cv::Scalar(77, 255, 255);
         }
         else if(color == BLUE) {
-            lower = cv::Scalar(100, 80, 46);
+            lower = cv::Scalar(100, 43, 46);
             upper = cv::Scalar(124, 255, 255);
         }
 
         cv::cvtColor(img, hsvImg, cv::COLOR_BGR2HSV);
         cv::inRange(hsvImg, lower, upper, hsvImg);
-        cv::GaussianBlur(hsvImg, blurImg, cv::Size(5, 5), 3, 3);
+        cv::GaussianBlur(hsvImg, blurImg, cv::Size(5, 5), 0, 0);
+        cv::blur(blurImg, blurImg, cv::Size(5, 5));
         cv::threshold(blurImg, threshImg, thresh, maxval, cv::THRESH_OTSU);
         cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(3, 3));
-        cv::morphologyEx(threshImg, resImg, cv::MORPH_OPEN, kernel, cv::Point(-1, -1), 4);
-        cv::morphologyEx(resImg, resImg, cv::MORPH_CLOSE, kernel, cv::Point(-1, -1), 4);
-        cv::findContours(resImg.clone(), contours, cv::RETR_LIST, cv::CHAIN_APPROX_SIMPLE);
+        resImg = threshImg.clone();
+        cv::morphologyEx(threshImg, resImg, cv::MORPH_OPEN, kernel, cv::Point(-1, -1), 2);
+        cv::morphologyEx(resImg, resImg, cv::MORPH_CLOSE, kernel, cv::Point(-1, -1), 2);
+        cv::findContours(resImg.clone(), contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
 
-//        std::cout << contours.size();
         std::vector<cv::Point2f> retPoints;
-        if(contours.size() == 2){
+//        std::cout << contours.size() << std::endl;
+        if(contours.size() > 2){
+            for(int i=0; i<contours.size(); i++){
+                cv::RotatedRect rect = cv::minAreaRect(contours[i]);
+                cv::Point2f points[4];
+                std::vector<cv::Point2f> p;
+                rect.points(points);
+                p.push_back(points[0]);
+                p.push_back(points[1]);
+                p.push_back(points[2]);
+                p.push_back(points[3]);
+                if(!judgeMaterial(rect, std::make_pair(img.cols, img.rows))){
+                    contours.erase(contours.begin() + i);
+                    cv::fillConvexPoly(resImg, p, cv::Scalar(255));
+                }
+                else{
+                    cv::drawContours(img, contours, i, cv::Scalar(0, 255, 0), 2);
+                }
+            }
+        }
+        std::cout << contours.size() << std::endl;
+        if(contours.size() == 2){                   // 上下两层都有物料
             cv::RotatedRect rect1, rect2;
             rect1 = cv::minAreaRect(contours[0]);
             rect2 = cv::minAreaRect(contours[1]);
             cv::Point2f points1[4], points2[4];
             rect1.points(points1);
             rect2.points(points2);
-            if(level == TOP) {
-               if(points1[0].y < points2[0].y){
-                   retPoints.push_back(points1[0]);
-                   retPoints.push_back(points1[1]);
-                   retPoints.push_back(points1[2]);
-                   retPoints.push_back(points1[3]);
-               }
-                else{
-                   retPoints.push_back(points2[0]);
-                   retPoints.push_back(points2[1]);
-                   retPoints.push_back(points2[2]);
-                   retPoints.push_back(points2[3]);
-               }
-            }
-            else{
-                if(points1[0].y > points2[0].y){
-                    retPoints.push_back(points1[0]);
-                    retPoints.push_back(points1[1]);
-                    retPoints.push_back(points1[2]);
-                    retPoints.push_back(points1[3]);
-                }
-                else{
-                    retPoints.push_back(points2[0]);
-                    retPoints.push_back(points2[1]);
-                    retPoints.push_back(points2[2]);
-                    retPoints.push_back(points2[3]);
-                }
-            }
-
+           if(points1[0].y < points2[0].y){
+               retPoints.push_back(points1[0]);
+               retPoints.push_back(points1[1]);
+               retPoints.push_back(points1[2]);
+               retPoints.push_back(points1[3]);
+           }
+           else{
+               retPoints.push_back(points2[0]);
+               retPoints.push_back(points2[1]);
+               retPoints.push_back(points2[2]);
+               retPoints.push_back(points2[3]);
+           }
+        }
+        else if(contours.size() == 1){
+            cv::RotatedRect rect;
+            rect = cv::minAreaRect(contours[0]);
+            cv::Point2f points[4];
+            rect.points(points);
+            retPoints.push_back(points[0]);
+            retPoints.push_back(points[1]);
+            retPoints.push_back(points[2]);
+            retPoints.push_back(points[3]);
         }
 
         cv::imshow("img", img);
@@ -157,7 +185,7 @@ namespace QRCode {
         cv::imshow("blur", blurImg);
         cv::imshow("thresh", threshImg);
         cv::imshow("res", resImg);
-        cv::waitKey(0);
+//        cv::waitKey(0);
         return retPoints;
     }
 
@@ -184,7 +212,7 @@ namespace QRCode {
 
         cv::cvtColor(img, hsvImg, cv::COLOR_BGR2HSV);
         cv::inRange(hsvImg, lower, upper, hsvImg);
-        cv::GaussianBlur(hsvImg, blurImg, cv::Size(5, 5), 3, 3);
+        cv::GaussianBlur(hsvImg, blurImg, cv::Size(5, 5), 0, 0);
         cv::threshold(blurImg, threshImg, thresh, maxval, cv::THRESH_OTSU);
         cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(3, 3));
 //        cv::morphologyEx(threshImg, resImg, cv::MORPH_OPEN, kernel, cv::Point(-1, -1), 1);
@@ -230,9 +258,15 @@ namespace QRCode {
         return barcode.score >= 2;
     }
 
-    bool detect::judgeMaterial(cv::RotatedRect rect) {
+    bool detect::judgeMaterial(cv::RotatedRect rect, std::pair<int, int> size) {
+        float w = rect.size.width;
+        float h = rect.size.height;
+        float areaRatio = w*h / (size.first*size.second);        // 7*5/(25*48)
+        float sum = w/h > 1.35 && w/h < 1.45
+//                       + areaRatio > 0.000001/*35/(20*45)*/ && areaRatio < 35/(30*50)
+                    ;
 
-        return true;
+        return sum == 1;
     }
 
     cv::Mat detect::getROI(cv::Mat img, std::vector<cv::RotatedRect> roi) {
