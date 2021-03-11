@@ -8,17 +8,16 @@ namespace QRCode
     // 发送数据格式
     class sendData{
     public:
-        short yaw;
-        short pitch;
-        short distance;
+        short num1;
+        short num2;
+        unsigned char num3;
     };
     // 串口设备的发送接口类
     class serialPortWrite:public serialPort
     {
     public:
-        serialPortWrite() = default;
-        explicit serialPortWrite(const serialPort_dev& config);
-        ~serialPortWrite();
+        serialPortWrite();
+        ~serialPortWrite() = default;
         void setSendMsg(sendData data);
         void writeData();
     private:

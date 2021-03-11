@@ -9,16 +9,16 @@ namespace QRCode
     // 接收数据格式
     class receiveData{
     public:
-        short yaw;
-        short pitch;
+        short x;
+        short y;
+        unsigned char z;
     };
     // 串口设备的接收接口类
     class serialPortRead:public serialPort
     {
     public:
-        serialPortRead() = default;
-        explicit serialPortRead(const serialPort_dev& config);
-        ~serialPortRead();
+        serialPortRead();
+        ~serialPortRead() = default;
         receiveData getReceiveMsg();
         void readData();
     private:

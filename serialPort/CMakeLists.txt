@@ -12,4 +12,6 @@ add_library( serialPort
 
 target_link_libraries(
         serialPort
+        -lboost_system
+        -lboost_thread
 )

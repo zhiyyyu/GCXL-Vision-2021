@@ -5,12 +5,9 @@ namespace QRCode{
      * @brief 构造函数
      * @param portName 串口名称
      */
-    serialPortRead::serialPortRead(const serialPort_dev& config)
+    serialPortRead::serialPortRead()
     {
-        if(config.enable)
-        {
-            init(config.deviceName);
-        }
+        init("/dev/ttyUSB0");
     }
     serialPortRead::~serialPortRead()
     {
@@ -46,12 +43,12 @@ namespace QRCode{
                 if(Verify_CRC8_Check_Sum(temp+1,8-2))//CRC校验
                 {
                     flag = temp[1];
-                    stm32.pitch = (temp[2]<<8)|temp[3];
-                    stm32.yaw = (temp[4]<<8)|temp[5];
-
-                    std::cout<<"-----------stm32.pitch:"<<stm32.pitch<<std::endl;
-                    std::cout<<"stm32.yaw:"<<stm32.yaw<<std::endl;
-
+                    stm32.x = (temp[2]<<8)|temp[3];
+                    stm32.y = (temp[4]<<8)|temp[5];
+                    stm32.z = (temp[6]);
+                    std::cout<<"stm32.x: "<<stm32.x<<std::endl;
+                    std::cout<<"stm32.y: "<<stm32.y<<std::endl;
+                    std::cout<<"stm32.z: "<<stm32.z<<std::endl;
                 }
                 break;
             }

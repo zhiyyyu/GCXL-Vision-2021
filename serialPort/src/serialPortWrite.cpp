@@ -7,15 +7,9 @@ namespace QRCode{
      * @brief 构造函数
      * @param portName 串口名称
      */
-    serialPortWrite::serialPortWrite(const serialPort_dev& config)
+    serialPortWrite::serialPortWrite()
     {
-        if(config.enable)
-        {
-            init(config.deviceName);
-        }
-    }
-    serialPortWrite::~serialPortWrite()
-    {
+        init("/dev/ttyUSB0");
     }
     /**
      * @brief 串口线程函数
@@ -36,18 +30,13 @@ namespace QRCode{
         //@TODO 添加CRC
         msg[0] = '!';
         msg[1] = 0x05;
-        unsigned char *tmp = (unsigned char*)(&temp.pitch);
-        std::cout<<"send pitch:"<<temp.pitch<<std::endl;
-        msg[2]=tmp[1];
-        msg[3]=tmp[0];
-
-        tmp = (unsigned char*)(&temp.yaw);
-        std::cout<<"send yaw:"<<temp.yaw<<"\n";
-        msg[4]=tmp[1];
-        msg[5]=tmp[0];
-
-        msg[6]=temp.distance;
-
+        unsigned char* tmp = (unsigned char*)(&temp.num1);
+        msg[2] = tmp[1];
+        msg[3] = tmp[0];
+        tmp = (unsigned char*)(&temp.num2);
+        msg[4] = tmp[1];
+        msg[5] = tmp[0];
+        msg[6] = temp.num3;
         msg[7] = '#';
         Append_CRC8_Check_Sum(msg+1, 8-2);
 
