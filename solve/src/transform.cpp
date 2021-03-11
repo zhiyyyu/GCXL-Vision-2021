@@ -57,8 +57,8 @@ namespace QRCode{
         float distance = (float)sqrt(pow(armor.translation()[0], 2) +
                                       pow(armor.translation()[1], 2) +
                                       pow(armor.translation()[2], 2));
-        float yaw = (float)(atan2(armor.translation()[0], armor.translation()[2])/pi*180);
-        float pitch = (float)(atan2(armor.translation()[1], armor.translation()[2])/pi*180);
+        float yaw = (float)(atan2(armor.translation()[0], armor.translation()[2])/PI*180);
+        float pitch = (float)(atan2(armor.translation()[1], armor.translation()[2])/PI*180);
         sendData.yaw = (short)(yaw*100);
         sendData.pitch = (short)(pitch*100);
         sendData.distance = (short)(distance);

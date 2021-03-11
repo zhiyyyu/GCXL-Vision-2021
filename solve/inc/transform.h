@@ -6,7 +6,7 @@
 #include "sophus/so3.h"
 #include "eigen3/Eigen/Dense"
 
-#define pi 3.14159
+#define PI (3.14159)
 
 namespace QRCode{
 

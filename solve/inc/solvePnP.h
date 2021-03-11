@@ -10,12 +10,18 @@
 #include "sophus/so3.h"
 //#include "transform.h"
 
+#define MATERIAL_WIDTH 50
+#define MATERIAL_HEIGHT 70
+#define CR_RADIUS 47.5
+#define MAT 1
+#define CR 0
+
 namespace QRCode{
     class solvePNP{
     public:
         solvePNP();
         ~solvePNP();
-        void solve(std::vector<cv::Point2f> Points2f);
+        cv::Mat solve(std::vector<cv::Point2f> Points2f, int mode);
 
         Sophus::SE3 TransformMatrix;
 
@@ -28,6 +34,10 @@ namespace QRCode{
 
         cv::Mat cameraMatrix;
         cv::Mat distCoeffs;
+        cv::Mat measurement_;
+        cv::KalmanFilter KF_;
+        cv::Mat state_;
+        cv::Mat processNoise_;
 
         cv::Mat rvec;
         cv::Mat tvec;
