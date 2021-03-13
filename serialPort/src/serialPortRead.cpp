@@ -9,25 +9,18 @@ namespace QRCode{
     {
         init("/dev/ttyUSB0");
     }
-    serialPortRead::~serialPortRead()
-    {
-        //delete read_data_;
-    }
     /**
      * @brief 串口线程函数
      */
-    void serialPortRead::process()
-    {
-//        std::cout<<"read cost time:"<<1000.f/counter_.countEnd()<<std::endl;
-//        counter_.countBegin();
-        readData();
-    }
+//    void serialPortRead::process()
+//    {
+//        readData();
+//    }
     /**
      * @brief 读数据
      */
-    void serialPortRead::readData()
+    void serialPortRead::readData(unsigned char* flag)
     {
-        short flag, counter, Gyro_Pitch, Gyro_Yaw;
         SP_Read(read_data_,max_receive_len_);
         //@TODO 读取数据
         memcpy(temptemp+8,read_data_,8);
@@ -42,13 +35,13 @@ namespace QRCode{
                 //@TODO CRC校验
                 if(Verify_CRC8_Check_Sum(temp+1,8-2))//CRC校验
                 {
-                    flag = temp[1];
-                    stm32.x = (temp[2]<<8)|temp[3];
-                    stm32.y = (temp[4]<<8)|temp[5];
-                    stm32.z = (temp[6]);
-                    std::cout<<"stm32.x: "<<stm32.x<<std::endl;
-                    std::cout<<"stm32.y: "<<stm32.y<<std::endl;
-                    std::cout<<"stm32.z: "<<stm32.z<<std::endl;
+                    flag = &temp[1];
+                    stm32.num1 = (temp[2]<<8)|temp[3];
+                    stm32.num2 = (temp[4]<<8)|temp[5];
+                    stm32.num3 = (temp[6]);
+//                    std::cout<<"stm32.x: "<<stm32.num1<<std::endl;
+//                    std::cout<<"stm32.y: "<<stm32.num2<<std::endl;
+//                    std::cout<<"stm32.z: "<<stm32.num3<<std::endl;
                 }
                 break;
             }

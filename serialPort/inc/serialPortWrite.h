@@ -19,7 +19,7 @@ namespace QRCode
         serialPortWrite();
         ~serialPortWrite() = default;
         void setSendMsg(sendData data);
-        void writeData();
+        void writeData(unsigned char flag);
     private:
         int max_receive_len_ = 8;
         sendData send_{};

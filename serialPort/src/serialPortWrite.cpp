@@ -14,14 +14,14 @@ namespace QRCode{
     /**
      * @brief 串口线程函数
      */
-    void serialPortWrite::process()
-    {
-        writeData();
-    }
+//    void serialPortWrite::process()
+//    {
+//        writeData(flag);
+//    }
     /**
      * @brief 写数据
      */
-    void serialPortWrite::writeData()
+    void serialPortWrite::writeData(unsigned char flag)
     {
         unsigned char msg[max_receive_len_];
 
@@ -29,7 +29,8 @@ namespace QRCode{
 
         //@TODO 添加CRC
         msg[0] = '!';
-        msg[1] = 0x05;
+//        msg[1] = 0x05;
+        msg[1] = flag;
         unsigned char* tmp = (unsigned char*)(&temp.num1);
         msg[2] = tmp[1];
         msg[3] = tmp[0];
