@@ -9,7 +9,7 @@
 namespace QRCode{
     solvePNP::solvePNP(){
         setCameraMatrix();
-        setDistCoeffs();
+//        setDistCoeffs();
 
         measurement_ = cv::Mat::zeros(6, 1, CV_32F);
         KF_ = cv::KalmanFilter(6,6,CV_32F);
@@ -43,21 +43,21 @@ namespace QRCode{
         return;
     }
 
-    void solvePNP::setDistCoeffs(){
-        distCoeffs = cv::Mat(5, 1, CV_64FC1, cv::Scalar::all(0));
-        distCoeffs.ptr<double>(0)[0] = -0.2337;
-        distCoeffs.ptr<double>(1)[0] = 0.2071;
-        distCoeffs.ptr<double>(2)[0] = 0;
-        distCoeffs.ptr<double>(3)[0] = 0;
-        distCoeffs.ptr<double>(4)[0] = 0;
-        return;
-    }
+//    void solvePNP::setDistCoeffs(){
+//        distCoeffs = cv::Mat(5, 1, CV_64FC1, cv::Scalar::all(0));
+//        distCoeffs.ptr<double>(0)[0] = -0.2337;
+//        distCoeffs.ptr<double>(1)[0] = 0.2071;
+//        distCoeffs.ptr<double>(2)[0] = 0;
+//        distCoeffs.ptr<double>(3)[0] = 0;
+//        distCoeffs.ptr<double>(4)[0] = 0;
+//        return;
+//    }
 
-    cv::Mat solvePNP::solve(std::vector<cv::Point2f> Points2f, int mode){
+    Sophus::SE3 solvePNP::solve(std::vector<cv::Point2f> Points2f, int mode){
         std::vector<cv::Point2d> Points2d;
         if(Points2f.size() < 4){
             std::cout << "not detected: " << Points2f.size() << std::endl;
-            cv::Mat empty;
+            Sophus::SE3 empty;
             return empty;
         }
         for(auto i=0; i<4; i++){
@@ -97,16 +97,8 @@ namespace QRCode{
         cv::cv2eigen(R,Rotate_M);           //cv -> eigen
         Sophus::SO3 rotate(Rotate_M);       //eigen -> sophus
         Eigen::Vector3d translate(tvec.ptr<double>(0)[0],tvec.ptr<double>(0)[1],tvec.ptr<double>(0)[2]);
-//        std::cout << "R" << R << std::endl;
-//        std::cout << "Rotate_M" << Rotate_M << std::endl;
-//        std::cout << "R_Eigen" << Rotate_M << std::endl;
-//        std::cout << "R_SO3" << rotate << std::endl;
-//        std::cout << "translate" << translate << std::endl;
-        TransformMatrix = Sophus::SE3(rotate,translate);
+        Sophus::SE3 transformMatrix = Sophus::SE3(rotate,translate);
 //        std::cout << "TransformMatrix_SE3" << TransformMatrix << TransformMatrix.translation() << std::endl;
-
-//        transform_ = new transform();
-//        transform_->setArmor2World(TransformMatrix);
-        return tvec;
+        return transformMatrix;
     }
 }

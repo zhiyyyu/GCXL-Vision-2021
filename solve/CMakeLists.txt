@@ -5,6 +5,7 @@ set(Sophus_LIBRARIES /usr/local/lib/libSophus.so)
 
 include_directories(
         inc
+        ../serialPort/inc
         ${Sophus_INCLUDE_DIRS}
         ${OpenCV_INCLUDE_DIRS}
         /usr/include/eigen3

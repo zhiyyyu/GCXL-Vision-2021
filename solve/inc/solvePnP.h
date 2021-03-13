@@ -21,13 +21,11 @@ namespace QRCode{
     public:
         solvePNP();
         ~solvePNP();
-        cv::Mat solve(std::vector<cv::Point2f> Points2f, int mode);
-
-        Sophus::SE3 TransformMatrix;
+        Sophus::SE3 solve(std::vector<cv::Point2f> Points2f, int mode);
 
     private:
         void setCameraMatrix();
-        void setDistCoeffs();
+//        void setDistCoeffs();
 
         cv::QRCodeDetector detector;
         cv::Mat result;
