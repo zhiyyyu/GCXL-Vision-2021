@@ -1,2 +1,6 @@
 # QRCodeDetector
-detect QRcode for robots, solve its distance and yaw/pitch angles.
+detect QRcode/Material Color/Ring Color for robots, solve their distance and yaw/pitch angles.
+
+
+* update 3.13
+校赛失败，停止更新。
