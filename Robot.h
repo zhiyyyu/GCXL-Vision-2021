@@ -3,43 +3,46 @@
 
 #include "solvePnP.h"
 #include "transform.h"
-#include "thread1.h"
-#include "thread2.h"
 #include "detect.h"
 #include <ctime>
+#include "serialPortRead.h"
+#include "serialPortWrite.h"
 
-#define USE_PIC 0
-#define USE_VIDEO 0
+#define SHOW_RAW_IMG 0
 
-//@TODO 改用枚举变量
-#define QRCODE_MODE 0
-#define BARCODE_MODE 1
-#define MATERIAL_MODE 2
+#define RED 1
+#define GREEN 2
+#define BLUE 3
 
 namespace QRCode{
     class Robot{
     public:
         Robot();
         ~Robot();
-        cv::Mat loadImg(std::string path);
-        void process(cv::Mat img, int mode);
+        void process(cv::Mat img);
+        void detectMaterialColor(cv::Mat img, int color);
+        void detectRingColor(cv::Mat img, int color);
 
-        std::string root = "/home/narrow/QRCodeDetector/";
-        std::string qrcode_path = "./QRCode.jpg";
-        std::string barcode_path  = "./BarCode.jpg";
+        std::string qrData;
+        int front = 0;
+        int color = 0;
 
-//        typedef enum detectMode{
-//            QRCODE = 0,
-//            BARCODE = 1,
-//            MATERIAL = 2,
-//        } detectMode;
+        const float offset_x = 47.25;
+        const float offset_y = 49.5;
+        const float offset_z = 13.75;
 
-        thread1* thread1_;
-        thread2* thread2_;
+        unsigned char flag;
+
+        bool updateColor = false;
+        bool isGetMaterial = false;
+        bool isPutDown = false;
+
+    private:
+        detect* detect_;
+        serialPortRead* serialPortRead_;
+        serialPortWrite* serialPortWrite_;
         solvePNP* solvePNP_;
         transform* transform_;
-        detect* detect_;
-//        Sophus::SE3 armor2camera;
     };
 }
 
