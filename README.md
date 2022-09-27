@@ -1,3 +1,3 @@
-# GCXL-2021
-detect QRcode/Material Color/Ring Color for robots, solve their distance and yaw/pitch angles.
+# GCXL-Vison-2021
 
+2021全国大学生工程训练综合能力竞赛智能物流搬运赛道视觉开源代码.
